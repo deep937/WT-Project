@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: student-management-system
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    buildCommand: ''
+    startCommand: ''
+    envVars:
+      - key: DB_TYPE
+        value: mysql
+      - key: DB_HOST
+        fromDatabase: ''
