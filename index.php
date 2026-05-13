@@ -75,9 +75,17 @@ if (defined('DB_ERROR')) {
         <nav class="navbar">
             <a href="index.php" class="nav-link active">Dashboard</a>
             <a href="add_student.php" class="nav-link">Add Student</a>
+            <a href="guest_feedback.php" class="nav-link">Give Feedback</a>
+            <a href="view_feedback.php" class="nav-link">View Feedback</a>
         </nav>
 
         <!-- Database Status -->
+        <?php if (defined('DB_TYPE')): ?>
+            <div class="message message-info">
+                <strong>DB Type:</strong> <?php echo DB_TYPE; ?>
+            </div>
+        <?php endif; ?>
+
         <?php if (defined('DB_ERROR')): ?>
             <div class="message message-warning">
                 <strong>⚠️ Database Notice:</strong> <?php echo htmlspecialchars($db_error); ?>
@@ -85,7 +93,7 @@ if (defined('DB_ERROR')) {
             </div>
         <?php else: ?>
             <div class="message message-success">
-                <strong>✅ Database Connected:</strong> System is ready (mysql)
+                <strong>✅ Database Connected:</strong> System is ready (<?php echo DB_TYPE; ?>)
             </div>
         <?php endif; ?>
 

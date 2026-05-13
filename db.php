@@ -6,7 +6,7 @@
  */
 
 // Read environment overrides
-$env_db_type = getenv('DB_TYPE') ?: null;
+$env_db_type = getenv('DB_TYPE') ?: 'mysql';
 
 // Helper to mark DB error
 function db_error($msg) {
@@ -62,6 +62,22 @@ if ($env_db_type && strtolower($env_db_type) === 'mysql') {
             throw new Exception('Error creating table: ' . $mysqli->error);
         }
 
+        // Create guest lecture feedback table if not exists
+        $create_feedback_table = "CREATE TABLE IF NOT EXISTS guest_lecture_feedback (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            student_roll_number VARCHAR(20) NOT NULL,
+            guest_lecture_title VARCHAR(255) NOT NULL,
+            lecture_date DATE NOT NULL,
+            rating TINYINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+            comments TEXT,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_roll_number) REFERENCES students(roll_number)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+
+        if (!$mysqli->query($create_feedback_table)) {
+            throw new Exception('Error creating feedback table: ' . $mysqli->error);
+        }
+
         $conn = $mysqli;
         define('DB_TYPE', 'mysql');
 
@@ -97,6 +113,18 @@ if ($env_db_type && strtolower($env_db_type) === 'mysql') {
             status TEXT DEFAULT 'Active',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+
+        // Create guest lecture feedback table if not exists (SQLite version)
+        $create_feedback_table = "CREATE TABLE IF NOT EXISTS guest_lecture_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_roll_number TEXT NOT NULL,
+            guest_lecture_title TEXT NOT NULL,
+            lecture_date DATE NOT NULL,
+            rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+            comments TEXT,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_roll_number) REFERENCES students(roll_number)
         )";
 
         $conn->exec($create_table);
